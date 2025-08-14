@@ -1,0 +1,42 @@
+---
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    hostname: gitlab
+    # environment:
+    #   GITLAB_OMNIBUS_CONFIG: |
+    #     external_url 'https://your_url'
+    #     nginx['redirect_http_to_https'] = true
+    #     gitlab_rails['gitlab_shell_ssh_port'] = 2224
+    #     gitlab_rails['time_zone'] = 'Europe/Moscow'
+    ports:
+      - "2224:22"
+      - "8080:80"
+      - "4443:443"
+    networks:
+      - gitlab-network
+    volumes:
+      - ./volumes/config:/etc/gitlab
+      - ./volumes/logs:/var/log/gitlab
+      - ./volumes/data:/var/opt/gitlab
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  runner:
+    image: 'gitlab/gitlab-runner:latest'
+    container_name: gitlab-runner
+    restart: always
+    volumes:
+      - './volumes/gitlab-runner:/etc/gitlab-runner'
+      - './volumes/docker.sock:/var/run/docker.sock'
+    networks:
+      - gitlab-network
+
+networks:
+  gitlab-network:
+    external:
+      name: gitlab-network
