@@ -1,0 +1,24 @@
+concurrent = 4
+check_interval = 3
+log_level = "info"
+
+[[runners]]
+  name = "main-runner"
+  url = "your_url"
+  token = "your_token"
+  executor = "docker"
+  limit = 1
+
+  [runners.custom_build_dir]
+  [runners.docker]
+    tls_verify = false
+    image = "docker:latest"
+    privileged = true
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = ["/cache"]
+    shm_size = 0
+
+  [runners.metrics]
+    listen_address = "0.0.0.0:9252"
